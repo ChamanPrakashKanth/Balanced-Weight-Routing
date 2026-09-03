@@ -1,0 +1,63 @@
+[
+  {
+    "id": "math_001_arithmetic_series",
+    "title": "Arithmetic Series Summation",
+    "domain": "math",
+    "difficulty": 0.20,
+    "prompt": "Calculate the exact numerical value of the arithmetic series expression: 21 / 2 * (1 + 101). State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "21 / 2 * (1 + 101) = 10.5 * 102 = 1071.0\nAnswer: 1071.0",
+    "expected_output": 1071.0,
+    "metadata": {
+      "flawed_solution": "21 / 2 * 102 = 1000\nAnswer: 1000.0"
+    }
+  },
+  {
+    "id": "math_002_derivative_eval",
+    "title": "Derivative Evaluation of x^2 * e^x",
+    "domain": "math",
+    "difficulty": 0.45,
+    "prompt": "Find the derivative f'(x) of f(x) = x^2 * exp(x) and evaluate it at x = 2. Provide the numerical answer rounded to 4 decimal places. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "f'(x) = 2*x*exp(x) + x^2*exp(x) = (2*x + x^2)*exp(x). At x = 2, f'(2) = (4 + 4)*exp(2) = 8 * 7.389056 = 59.1124.\nAnswer: 59.1124",
+    "expected_output": 59.1124,
+    "metadata": {
+      "symbolic_expected": "(2*x + x**2)*exp(x)",
+      "flawed_solution": "f'(x) = 2*x*exp(x)\nAnswer: 29.5562"
+    }
+  },
+  {
+    "id": "math_003_definite_integral",
+    "title": "Definite Integral of Polynomial",
+    "domain": "math",
+    "difficulty": 0.35,
+    "prompt": "Evaluate the definite integral from x = 0 to x = 3 of (3*x^2 - 2*x + 5) dx. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "Integral = [x^3 - x^2 + 5*x] from 0 to 3 = (27 - 9 + 15) - 0 = 33.0\nAnswer: 33.0",
+    "expected_output": 33.0,
+    "metadata": {
+      "flawed_solution": "Integral = 27 + 9 + 15 = 51.0\nAnswer: 51.0"
+    }
+  },
+  {
+    "id": "math_004_linear_system_norm",
+    "title": "2x2 Linear System Solver",
+    "domain": "math",
+    "difficulty": 0.40,
+    "prompt": "Solve the linear system for (x, y):\n2*x + 3*y = 13\n5*x - y = 7\nThen calculate x^2 + y^2. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "From eq 2: y = 5*x - 7. Substitute into eq 1: 2*x + 3*(5*x - 7) = 13 => 17*x - 21 = 13 => 17*x = 34 => x = 2. Then y = 10 - 7 = 3. x^2 + y^2 = 2^2 + 3^2 = 4 + 9 = 13.0\nAnswer: 13.0",
+    "expected_output": 13.0,
+    "metadata": {
+      "flawed_solution": "x = 1, y = 2 => x^2 + y^2 = 5\nAnswer: 5.0"
+    }
+  },
+  {
+    "id": "math_005_modular_exponentiation",
+    "title": "Modular Exponentiation via Fermat/Euler",
+    "domain": "math",
+    "difficulty": 0.70,
+    "prompt": "Compute 7^2023 mod 13. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "By Fermat's Little Theorem, 7^12 = 1 (mod 13). 2023 = 12 * 168 + 7. Thus 7^2023 = 7^7 (mod 13). 7^1 = 7, 7^2 = 10 = -3, 7^4 = 9 = -4, 7^6 = 12 = -1. 7^7 = 7^6 * 7 = -1 * 7 = -7 = 6 (mod 13).\nAnswer: 6.0",
+    "expected_output": 6.0,
+    "metadata": {
+      "flawed_solution": "7^2023 mod 13 = 1\nAnswer: 1.0"
+    }
+  }
+]

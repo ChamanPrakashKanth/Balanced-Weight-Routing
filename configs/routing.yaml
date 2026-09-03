@@ -1,0 +1,31 @@
+# Balanced Weight Routing (BWR) and Verification Configuration
+
+optimization:
+  # Weights for combined objective J = lambda_R * ||R||^2 + lambda_K * K_total + lambda_L * L_total + lambda_U * U_total
+  lambda_R: 10.0   # Penalty on unresolved error / residual
+  lambda_K: 1.0    # Penalty on inference expenditure
+  lambda_L: 0.1    # Penalty on latency
+  lambda_U: 0.5    # Penalty on uncertainty/risk
+
+  # Target verified quality threshold (tau in optimization problem)
+  required_reliability: 0.90
+
+  # Marginal escalation efficiency threshold (E_ij = Delta Q_ij / Delta K_ij)
+  marginal_escalation_min_gain: 0.05
+  allow_model_skipping: true
+
+bayesian_smoothing:
+  # Prior alpha and beta for capability estimation: (s_i + alpha) / (n_i + alpha + beta)
+  prior_alpha: 1.0
+  prior_beta: 2.0
+
+budget:
+  max_normalized_cost: 5.0
+  max_total_tokens: 15000
+  max_escalations: 4
+  max_latency_seconds: 180.0
+
+residual_extraction:
+  enable_context_compression: true
+  include_test_failures_only: true
+  strip_conversational_boilerplate: true

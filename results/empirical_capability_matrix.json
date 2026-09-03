@@ -1,0 +1,331 @@
+{
+  "prior_alpha": 1.0,
+  "prior_beta": 2.0,
+  "stats": {
+    "model_1": {
+      "code": {
+        "attempts": 7,
+        "successes": 2,
+        "total_cost": 0.0091323,
+        "residual_reductions": [
+          0.55,
+          1.0,
+          0.8,
+          1.0,
+          0.4,
+          0.4,
+          0.4
+        ]
+      },
+      "math": {
+        "attempts": 5,
+        "successes": 2,
+        "total_cost": 0.004508600000000001,
+        "residual_reductions": [
+          1.0,
+          0.5,
+          1.0,
+          0.3846153846153846,
+          0.16666666666666663
+        ]
+      },
+      "mechanics": {
+        "attempts": 6,
+        "successes": 2,
+        "total_cost": 0.0097306,
+        "residual_reductions": [
+          0.5882157538512645,
+          0.6,
+          1.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "structured": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "mixed": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "trap": {
+        "attempts": 5,
+        "successes": 1,
+        "total_cost": 0.0090375,
+        "residual_reductions": [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "model_2": {
+      "code": {
+        "attempts": 7,
+        "successes": 4,
+        "total_cost": 0.026379100000000003,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.4,
+          0.4,
+          0.4
+        ]
+      },
+      "math": {
+        "attempts": 5,
+        "successes": 3,
+        "total_cost": 0.010272400000000001,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          0.3846153846153846,
+          0.16666666666666663
+        ]
+      },
+      "mechanics": {
+        "attempts": 6,
+        "successes": 2,
+        "total_cost": 0.0202344,
+        "residual_reductions": [
+          1.0,
+          0.6,
+          0.75,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "structured": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "mixed": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "trap": {
+        "attempts": 5,
+        "successes": 1,
+        "total_cost": 0.0160556,
+        "residual_reductions": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "model_3": {
+      "code": {
+        "attempts": 7,
+        "successes": 5,
+        "total_cost": 0.059662320000000005,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.4,
+          0.4
+        ]
+      },
+      "math": {
+        "attempts": 5,
+        "successes": 4,
+        "total_cost": 0.030409840000000007,
+        "residual_reductions": [
+          1.0,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "mechanics": {
+        "attempts": 6,
+        "successes": 4,
+        "total_cost": 0.04249776,
+        "residual_reductions": [
+          0.5882157538512645,
+          0.6,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "structured": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "mixed": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "trap": {
+        "attempts": 5,
+        "successes": 1,
+        "total_cost": 0.036474,
+        "residual_reductions": [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "model_4": {
+      "code": {
+        "attempts": 7,
+        "successes": 4,
+        "total_cost": 0.0996555,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.4,
+          0.4,
+          0.4
+        ]
+      },
+      "math": {
+        "attempts": 5,
+        "successes": 4,
+        "total_cost": 0.046553849999999994,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.16666666666666663
+        ]
+      },
+      "mechanics": {
+        "attempts": 6,
+        "successes": 5,
+        "total_cost": 0.08832145,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0,
+          1.0
+        ]
+      },
+      "structured": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "mixed": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "trap": {
+        "attempts": 5,
+        "successes": 4,
+        "total_cost": 0.07502005,
+        "residual_reductions": [
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    "model_5": {
+      "code": {
+        "attempts": 7,
+        "successes": 4,
+        "total_cost": 0.13862200000000002,
+        "residual_reductions": [
+          1.0,
+          0.7,
+          1.0,
+          1.0,
+          1.0,
+          0.4,
+          0.4
+        ]
+      },
+      "math": {
+        "attempts": 5,
+        "successes": 5,
+        "total_cost": 0.08509000000000001,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "mechanics": {
+        "attempts": 6,
+        "successes": 6,
+        "total_cost": 0.134372,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "structured": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "mixed": {
+        "attempts": 0,
+        "successes": 0,
+        "total_cost": 0.0,
+        "residual_reductions": []
+      },
+      "trap": {
+        "attempts": 5,
+        "successes": 4,
+        "total_cost": 0.114654,
+        "residual_reductions": [
+          1.0,
+          1.0,
+          1.0,
+          0.0,
+          1.0
+        ]
+      }
+    }
+  }
+}

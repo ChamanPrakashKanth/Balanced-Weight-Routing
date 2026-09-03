@@ -1,0 +1,23 @@
+# Inference Cost Configuration
+# Formula for local models: K_i = alpha * T_in + beta * T_out + gamma * t_i + delta * E_i
+# Normalized per 1,000 tokens for clean dimensionless proxy units
+
+local_proxy:
+  alpha: 0.00010     # Weight for input tokens (normalized, e.g. 0.10 / 1000)
+  beta: 0.00025      # Weight for output tokens (normalized, e.g. 0.25 / 1000)
+  gamma: 0.00100     # Weight for wall-clock latency in seconds
+  delta: 0.00000     # Optional energy / compute factor (Joules or GPU-seconds)
+
+# Model size scaling factors (approximate compute scaling relative to 1B base)
+tier_multipliers:
+  model_1: 0.10
+  model_2: 0.20
+  model_3: 0.40
+  model_4: 0.70
+  model_5: 1.00
+
+# Optional cloud API pricing equivalents ($ / 1M tokens) for commercial comparisons
+api_pricing_usd:
+  input_per_million: 0.50
+  output_per_million: 1.50
+  cached_per_million: 0.125

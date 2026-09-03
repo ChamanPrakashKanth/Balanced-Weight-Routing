@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "balanced-weight-router"
+version = "0.1.0"
+description = "Balanced Weight Routing (BWR) and Verified Residual Routing (VRR) for heterogeneous LLM cascades"
+readme = "README.md"
+authors = [
+    { name = "BWR Research Team" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "sympy>=1.12",
+    "tabulate>=0.9.0",
+    "rich>=13.0.0",
+    "ollama>=0.3.0",
+    "httpx>=0.24.0",
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0"
+]
+
+[project.scripts]
+bwr-run = "experiments.run_all_experiments:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bwr*", "verifiers*", "benchmarks*", "experiments*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

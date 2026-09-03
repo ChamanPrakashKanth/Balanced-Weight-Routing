@@ -1,0 +1,67 @@
+[
+  {
+    "id": "mech_001_single_plane_mass_balance",
+    "title": "Single Plane Rotating Mass Balancing",
+    "domain": "mechanics",
+    "difficulty": 0.50,
+    "prompt": "Two masses rotate in the same plane: m1 = 2.0 kg at radius r1 = 0.2 m at angle theta1 = 0 deg, and m2 = 1.5 kg at radius r2 = 0.3 m at theta2 = 90 deg. Find the magnitude of the balancing mass m_b (in kg) placed at radius r_b = 0.25 m to achieve complete static balance. Round to 4 decimal places. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "Unbalance components:\nFx = m1*r1*cos(0) + m2*r2*cos(90) = 2.0*0.2*1 + 1.5*0.3*0 = 0.40 kg.m\nFy = m1*r1*sin(0) + m2*r2*sin(90) = 0 + 1.5*0.3*1 = 0.45 kg.m\nResultant unbalance = sqrt(0.40^2 + 0.45^2) = sqrt(0.16 + 0.2025) = sqrt(0.3625) = 0.60208 kg.m\nBalancing mass m_b = Resultant / r_b = 0.60208 / 0.25 = 2.4083 kg.\nAnswer: 2.4083",
+    "expected_output": 2.4083,
+    "metadata": {
+      "mechanics_type": "rotating_mass_balance",
+      "flawed_solution": "Fx = 0.4, Fy = 0.45 => m_b = (0.4 + 0.45)/0.25 = 3.4 kg\nAnswer: 3.4000"
+    }
+  },
+  {
+    "id": "mech_002_multi_plane_dynamic_balancing",
+    "title": "Two-Plane Dynamic Couple Balancing",
+    "domain": "mechanics",
+    "difficulty": 0.75,
+    "prompt": "A rotating shaft has an unbalanced couple with orthogonal moment components about reference plane A given by Mx = 0.60 kg.m^2 and My = 0.80 kg.m^2. Correction plane B is located at axial distance L = 0.50 m from plane A. If balancing mass in plane B is mounted at radius r_B = 0.20 m, calculate the required balancing mass m_B in kg to balance this couple. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "Total resultant moment M_R = sqrt(Mx^2 + My^2) = sqrt(0.60^2 + 0.80^2) = sqrt(0.36 + 0.64) = 1.0 kg.m^2.\nRequired unbalance in plane B: (m_B * r_B) * L = M_R => m_B * 0.20 * 0.50 = 1.0 => m_B * 0.10 = 1.0 => m_B = 10.0 kg.\nAnswer: 10.0",
+    "expected_output": 10.0,
+    "metadata": {
+      "mechanics_type": "rotating_mass_balance",
+      "flawed_solution": "M_R = 0.6 + 0.8 = 1.4 => m_B = 1.4 / (0.5 * 0.2) = 14.0\nAnswer: 14.0"
+    }
+  },
+  {
+    "id": "mech_003_simply_supported_beam_reaction",
+    "title": "Simply Supported Beam Reaction Forces",
+    "domain": "mechanics",
+    "difficulty": 0.30,
+    "prompt": "A simply supported horizontal beam of span L = 6.0 m carries a vertical downward point load P = 1200 N at a distance of 2.0 m from the left support A. Calculate the upward reaction force R_A (in Newtons) at support A. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "Taking moments about right support B: sum(M_B) = 0 => R_A * 6.0 - 1200 * (6.0 - 2.0) = 0 => 6.0 * R_A = 1200 * 4.0 = 4800 => R_A = 800.0 N.\nAnswer: 800.0",
+    "expected_output": 800.0,
+    "metadata": {
+      "mechanics_type": "beam_reaction",
+      "flawed_solution": "R_A = 1200 / 2 = 600.0\nAnswer: 600.0"
+    }
+  },
+  {
+    "id": "mech_004_spring_mass_frequency",
+    "title": "Undamped Spring-Mass Natural Frequency",
+    "domain": "mechanics",
+    "difficulty": 0.35,
+    "prompt": "An undamped single degree of freedom spring-mass system has mass m = 4.0 kg and spring stiffness k = 3600 N/m. Calculate the circular natural frequency omega_n in rad/s. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "omega_n = sqrt(k / m) = sqrt(3600 / 4.0) = sqrt(900) = 30.0 rad/s.\nAnswer: 30.0",
+    "expected_output": 30.0,
+    "metadata": {
+      "mechanics_type": "spring_mass_vibration",
+      "flawed_solution": "omega_n = 3600 / 4 = 900.0\nAnswer: 900.0"
+    }
+  },
+  {
+    "id": "mech_005_thermodynamic_first_law",
+    "title": "Closed System First Law Energy Balance",
+    "domain": "mechanics",
+    "difficulty": 0.25,
+    "prompt": "A closed thermodynamic system absorbs Q = 850 kJ of heat from surroundings while doing W = 320 kJ of boundary work on surroundings during an expansion process. Calculate the net change in internal energy Delta U in kJ. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "By the First Law of Thermodynamics for a closed system: Q - W = Delta U => Delta U = 850 - 320 = 530.0 kJ.\nAnswer: 530.0",
+    "expected_output": 530.0,
+    "metadata": {
+      "mechanics_type": "thermo_energy_balance",
+      "flawed_solution": "Delta U = 850 + 320 = 1170.0 kJ\nAnswer: 1170.0"
+    }
+  }
+]

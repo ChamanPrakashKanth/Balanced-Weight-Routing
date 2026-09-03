@@ -1,0 +1,88 @@
+# 5-Model Ladder Configuration for BWR / VRR
+# Models are ordered roughly from cheapest/weakest (model_1) to strongest/most capable (model_5).
+# Live Ollama models can be customized by changing `ollama_name`.
+
+ladder:
+  - id: "model_1"
+    name: "Model 1 (Micro)"
+    ollama_name: "qwen2.5:0.5b"
+    cost_tier: 1
+    context_length: 4096
+    default_temperature: 0.0
+    mock_profile:
+      speed_factor: 1.0
+      token_cost_multiplier: 0.10
+      capabilities:
+        code: 0.35
+        math: 0.25
+        mechanics: 0.20
+        structured: 0.50
+        trap_resistance: 0.15
+
+  - id: "model_2"
+    name: "Model 2 (Mini)"
+    ollama_name: "llama3.2:1b"
+    cost_tier: 2
+    context_length: 8192
+    default_temperature: 0.0
+    mock_profile:
+      speed_factor: 1.5
+      token_cost_multiplier: 0.20
+      capabilities:
+        code: 0.55
+        math: 0.45
+        mechanics: 0.40
+        structured: 0.70
+        trap_resistance: 0.35
+
+  - id: "model_3"
+    name: "Model 3 (Small)"
+    ollama_name: "qwen2.5:3b"
+    cost_tier: 3
+    context_length: 8192
+    default_temperature: 0.0
+    mock_profile:
+      speed_factor: 2.2
+      token_cost_multiplier: 0.40
+      capabilities:
+        code: 0.75
+        math: 0.65
+        mechanics: 0.60
+        structured: 0.85
+        trap_resistance: 0.60
+
+  - id: "model_4"
+    name: "Model 4 (Medium)"
+    ollama_name: "mistral:7b"
+    cost_tier: 4
+    context_length: 16384
+    default_temperature: 0.0
+    mock_profile:
+      speed_factor: 3.5
+      token_cost_multiplier: 0.70
+      capabilities:
+        code: 0.88
+        math: 0.82
+        mechanics: 0.78
+        structured: 0.92
+        trap_resistance: 0.80
+
+  - id: "model_5"
+    name: "Model 5 (Large/Strongest)"
+    ollama_name: "qwen2.5:14b"
+    cost_tier: 5
+    context_length: 32768
+    default_temperature: 0.0
+    mock_profile:
+      speed_factor: 6.0
+      token_cost_multiplier: 1.00
+      capabilities:
+        code: 0.96
+        math: 0.94
+        mechanics: 0.92
+        structured: 0.98
+        trap_resistance: 0.92
+
+ollama_server:
+  host: "http://127.0.0.1:11434"
+  timeout_seconds: 90

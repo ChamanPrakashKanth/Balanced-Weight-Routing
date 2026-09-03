@@ -1,0 +1,59 @@
+[
+  {
+    "id": "mixed_001_vibration_damping_ratio",
+    "title": "Damped Vibration Logarithmic Decrement Solver",
+    "domain": "code",
+    "difficulty": 0.65,
+    "prompt": "Implement a Python function `log_decrement_damping_ratio(x1: float, xn: float, n: float) -> float` that computes the damping ratio zeta from the logarithmic decrement delta = (1/n) * ln(x1 / xn), where zeta = delta / sqrt(4 * pi^2 + delta^2). Round result to 5 decimal places.",
+    "reference_solution": "import math\n\ndef log_decrement_damping_ratio(x1: float, xn: float, n: float) -> float:\n    delta = (1.0 / n) * math.log(x1 / xn)\n    zeta = delta / math.sqrt(4 * math.pi**2 + delta**2)\n    return round(zeta, 5)",
+    "test_cases": [
+      {
+        "name": "case_standard",
+        "function_name": "log_decrement_damping_ratio",
+        "inputs": [10.0, 2.0, 4.0],
+        "expected": 0.06395
+      },
+      {
+        "name": "case_high_decay",
+        "function_name": "log_decrement_damping_ratio",
+        "inputs": [10.0, 0.5, 2.0],
+        "expected": 0.23199
+      }
+    ],
+    "metadata": {
+      "flawed_solution": "def log_decrement_damping_ratio(x1, xn, n): return 0.05"
+    }
+  },
+  {
+    "id": "mixed_002_matrix_moment_inertia_principal",
+    "title": "Principal Moments of Inertia Eigenvalue Solver",
+    "domain": "code",
+    "difficulty": 0.75,
+    "prompt": "Write a Python function `principal_inertia(Ixx: float, Iyy: float, Ixy: float) -> tuple[float, float]` that calculates the principal moments of inertia (I_max, I_min) using Mohr's circle / eigenvalue formula: (Ixx + Iyy)/2 +/- sqrt(((Ixx - Iyy)/2)^2 + Ixy^2). Return tuple (round(I_max, 4), round(I_min, 4)).",
+    "reference_solution": "import math\n\ndef principal_inertia(Ixx: float, Iyy: float, Ixy: float) -> tuple[float, float]:\n    avg = (Ixx + Iyy) / 2.0\n    diff = (Ixx - Iyy) / 2.0\n    R = math.sqrt(diff**2 + Ixy**2)\n    return (round(avg + R, 4), round(avg - R, 4))",
+    "test_cases": [
+      {
+        "name": "standard_circle",
+        "function_name": "principal_inertia",
+        "inputs": [50.0, 20.0, 20.0],
+        "expected": [60.0, 10.0]
+      }
+    ],
+    "metadata": {
+      "flawed_solution": "def principal_inertia(Ixx, Iyy, Ixy): return (Ixx, Iyy)"
+    }
+  },
+  {
+    "id": "mixed_003_gear_train_speed_ratio",
+    "title": "Compound Gear Train Output Speed",
+    "domain": "mechanics",
+    "difficulty": 0.40,
+    "prompt": "A compound gear train consists of driver gear 1 (N1 = 20 teeth, input speed omega1 = 1800 rpm) meshing with gear 2 (N2 = 60 teeth). Gear 3 (N3 = 25 teeth) is mounted on the same shaft as gear 2 and meshes with gear 4 (N4 = 100 teeth). Calculate the output rotational speed omega4 of gear 4 in rpm. State your final answer clearly as 'Answer: <number>'.",
+    "reference_solution": "Train ratio = (N1 / N2) * (N3 / N4) = (20 / 60) * (25 / 100) = (1/3) * (1/4) = 1/12.\nOutput speed omega4 = omega1 * (1/12) = 1800 / 12 = 150.0 rpm.\nAnswer: 150.0",
+    "expected_output": 150.0,
+    "metadata": {
+      "mechanics_type": "general_equilibrium",
+      "flawed_solution": "omega4 = 1800 * (60/20) = 5400\nAnswer: 5400.0"
+    }
+  }
+]
