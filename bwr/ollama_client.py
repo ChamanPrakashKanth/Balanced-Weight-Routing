@@ -42,7 +42,7 @@ class OllamaModelClient(BaseModelClient):
         self,
         profile: ModelProfile,
         host: str = "http://127.0.0.1:11434",
-        timeout: float = 90.0,
+        timeout: float = 240.0,
     ):
         super().__init__(profile)
         self.host = host.rstrip("/")
@@ -64,11 +64,16 @@ class OllamaModelClient(BaseModelClient):
             "stream": False,
             "options": {
                 "temperature": temp,
-                "num_ctx": self.profile.context_length,
+                "num_ctx": min(self.profile.context_length, 8192),
+                "num_predict": 256,
             },
         }
-        if system_prompt:
-            payload["system"] = system_prompt
+        default_sys = (
+            "You are an expert technical problem solver. For coding tasks, provide the complete, functional Python code "
+            "enclosed in ```python ... ``` blocks without conversational boilerplate. For mathematical, mechanical, "
+            "or physics questions, calculate step-by-step and state your final answer clearly on a dedicated line as 'Answer: <value>'."
+        )
+        payload["system"] = system_prompt or default_sys
 
         try:
             with httpx.Client(timeout=self.timeout) as client:

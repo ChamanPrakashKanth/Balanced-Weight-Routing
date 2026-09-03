@@ -253,7 +253,7 @@ class BalancedWeightRouter(BaseRouter):
     2. Efficiency-based initial model selection (eta_i = P(success) / E[K_i])
     3. Marginal escalation efficiency E_ij = Delta Q_ij / Delta K_ij
     4. Model skipping (e.g. M1 -> M4) when intermediate models are unlikely to resolve residual
-    5. Minimal residual context formulation
+    5. Minimal residual context formulation (optional via use_residual)
     """
 
     def __init__(
@@ -262,6 +262,7 @@ class BalancedWeightRouter(BaseRouter):
         capability_matrix: Optional[EmpiricalCapabilityMatrix] = None,
         marginal_gain_min: float = 0.05,
         allow_skipping: bool = True,
+        use_residual: bool = True,
     ):
         super().__init__(profiles)
         self.capability_matrix = capability_matrix or EmpiricalCapabilityMatrix(
@@ -269,6 +270,7 @@ class BalancedWeightRouter(BaseRouter):
         )
         self.marginal_gain_min = marginal_gain_min
         self.allow_skipping = allow_skipping
+        self.use_residual = use_residual
 
     def route_step(
         self,
@@ -300,7 +302,7 @@ class BalancedWeightRouter(BaseRouter):
         return RoutingDecision(
             selected_model_id=next_model_id,
             reason=f"bwr_marginal_escalation_skip_{skip_jump}",
-            is_residual=True,
+            is_residual=self.use_residual,
             expected_efficiency=eff,
             estimated_capability=p_succ,
             skip_jump=skip_jump,

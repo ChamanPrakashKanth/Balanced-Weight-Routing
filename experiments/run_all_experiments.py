@@ -69,14 +69,14 @@ def run_full_suite(
 
     orchestrator = Orchestrator(profiles=profiles, use_mock=use_mock, seed=seed)
 
-    # Define all baseline and routing configurations
+    # Define all baseline and routing configurations including the 2x2 Factorial Matrix
     experiments = [
-        ("exp01_strongest_only", "Strongest Only (M5)", StrongestOnlyRouter(profiles)),
-        ("exp02_fixed_cascade", "Fixed Cascade", FixedCascadeRouter(profiles)),
-        ("exp03_confidence_router", "Confidence Router (Control)", ConfidenceRouter(profiles, confidence_threshold=0.85)),
-        ("exp04_verified_full", "Verified Escalation (Full Context)", VerifiedFullTaskRouter(profiles)),
-        ("exp05_verified_residual", "Verified Residual Routing (VRR)", VerifiedResidualRouter(profiles)),
-        ("exp06_balanced_weight", "Balanced Weight Router (BWR)", BalancedWeightRouter(profiles, capability_matrix=matrix, allow_skipping=True)),
+        ("exp01_strongest_only", "M5 Only (Baseline)", StrongestOnlyRouter(profiles)),
+        ("exp02_fixed_full", "Policy A: Fixed Cascade (Full Context)", VerifiedFullTaskRouter(profiles)),
+        ("exp05_fixed_residual", "Policy B: VRR (Fixed + Residual)", VerifiedResidualRouter(profiles)),
+        ("exp06a_bwr_full", "Policy C: BWR (Full Context)", BalancedWeightRouter(profiles, capability_matrix=matrix, allow_skipping=True, use_residual=False)),
+        ("exp06b_bwr_residual", "Policy D: BWR + VRR (Balanced + Residual)", BalancedWeightRouter(profiles, capability_matrix=matrix, allow_skipping=True, use_residual=True)),
+        ("exp03_confidence_control", "Confidence Router (Ablation Control)", ConfidenceRouter(profiles, confidence_threshold=0.85)),
     ]
 
     all_states: Dict[str, List[Any]] = {}
@@ -151,8 +151,8 @@ def run_full_suite(
     console.print(table_md)
 
     # Hypothesis Testing Assessment
-    bwr_summ = all_summaries["exp06_balanced_weight"]
-    strongest_summ = all_summaries["exp01_strongest_only"]
+    bwr_summ = all_summaries.get("exp06b_bwr_residual", all_summaries.get("exp06_balanced_weight", {}))
+    strongest_summ = all_summaries.get("exp01_strongest_only", {})
     cost_saving_val = bwr_summ.get("cost_savings_pct", 0.0)
     q_bwr = bwr_summ.get("success_rate", 0.0)
     q_str = strongest_summ.get("success_rate", 0.0)
