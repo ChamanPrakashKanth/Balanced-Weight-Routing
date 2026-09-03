@@ -14,6 +14,7 @@ from bwr.models import (
     RoutingHistoryItem,
     VerificationResult,
     ModelResponse,
+    DemandVector,
 )
 from bwr.cost import CostTracker, CostConfig
 from bwr.budget import BudgetController, BudgetLimits
@@ -174,22 +175,22 @@ class Orchestrator:
                 )
 
             # Advance state pointers
+            state.current_step += 1
             last_response = response
             last_verification = verification
             state.final_response = response
             state.final_verification = verification
-            state.current_step += 1
 
-            # Termination check
-            should_term, term_reason = router.should_terminate(
-                state=state,
-                last_verification=last_verification,
-                last_response=last_response,
-            )
-            if should_term:
-                state.termination_reason = term_reason
-                state.success = (term_reason == "verified_success")
+            # Check success condition
+            if verification.passed:
+                state.success = True
+                state.termination_reason = "verified_success"
                 break
+
+            # Closed-loop dynamic feedback: update remaining demand vector D_{t+1} <- R_obs
+            r_obs = self._extract_observed_residual_vector(task, state.current_demand, verification)
+            state.observed_residual_vector = r_obs
+            state.current_demand = r_obs
 
         return state
 
@@ -215,3 +216,46 @@ class Orchestrator:
             )
             results.append(st)
         return results
+
+    def _extract_observed_residual_vector(
+        self,
+        task: Task,
+        current_demand: DemandVector,
+        verification: VerificationResult,
+    ) -> DemandVector:
+        """
+        Closed-loop residual vector mapping:
+        Translates deterministic verification failures into remaining load dimensions R_obs.
+        """
+        arr = current_demand.to_array().copy()
+        fail_categories = {f.category.lower() for f in verification.failures}
+
+        # If math verification failed (tolerance/symbolic/delta)
+        if any(cat in fail_categories for cat in ("math_numeric_tolerance", "symbolic_equivalence", "math_delta", "numerical_delta")):
+            arr[0] = max(arr[0], task.demand.math)       # math
+            arr[1] = max(arr[1], task.demand.reasoning)  # reasoning
+
+        # If code verification failed (syntax/runtime/test assertion)
+        if any(cat in fail_categories for cat in ("syntax_error", "test_assertion_failed", "runtime_error", "timeout", "missing_function")):
+            arr[2] = max(arr[2], task.demand.code)       # code
+            arr[5] = max(arr[5], max(0.5, task.demand.planning))  # planning
+            if "test_assertion_failed" in fail_categories:
+                arr[1] = max(arr[1], task.demand.reasoning)
+
+        # If mechanics verification failed (unbalance/beam/spring/thermo)
+        if any(cat in fail_categories for cat in ("mass_balance_error", "beam_moment_error", "vibration_freq_error", "thermo_energy_error", "rotating_mass_balance")):
+            arr[4] = max(arr[4], task.demand.mechanics)  # mechanics
+            arr[0] = max(arr[0], task.demand.math)       # math
+            arr[1] = max(arr[1], task.demand.reasoning)
+
+        # If trap verification failed (hallucinated misconception triggered)
+        if any(cat in fail_categories for cat in ("hallucination_trap_triggered", "trap_violation", "forbidden_pattern_matched")):
+            arr[6] = 1.0                                 # trap
+            arr[1] = max(arr[1], 0.90)                   # reasoning
+            arr[3] = max(arr[3], 0.70)                   # language
+
+        # Scale by remaining error magnitude
+        err_scale = max(0.2, verification.residual_error)
+        arr = arr * err_scale
+
+        return DemandVector.from_array(arr)

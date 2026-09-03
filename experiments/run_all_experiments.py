@@ -15,7 +15,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from bwr.models import ModelProfile, Task
-from bwr.capability import EmpiricalCapabilityMatrix
+from bwr.capability import EmpiricalCapabilityMatrix, FeatureVectorCapabilityMatrix
 from bwr.router import (
     StrongestOnlyRouter,
     FixedCascadeRouter,
@@ -23,11 +23,13 @@ from bwr.router import (
     VerifiedFullTaskRouter,
     VerifiedResidualRouter,
     BalancedWeightRouter,
+    FeatureVectorBWRRouter,
 )
 from bwr.orchestrator import Orchestrator
 from bwr.telemetry import MetricsAggregator
 from benchmarks.loader import BenchmarkSuite
 from experiments.exp00_individual_models import run_exp00
+from bwr.verifier import VerifierRegistry
 
 console = Console()
 
@@ -69,13 +71,29 @@ def run_full_suite(
 
     orchestrator = Orchestrator(profiles=profiles, use_mock=use_mock, seed=seed)
 
-    # Define all baseline and routing configurations including the 2x2 Factorial Matrix
+    # Calibrate 7D Feature Vector matrix
+    fv_matrix = FeatureVectorCapabilityMatrix(model_ids=[p.id for p in profiles])
+    for task in tasks:
+        for profile in profiles:
+            client = orchestrator.clients[profile.id]
+            resp = client.generate(prompt=task.prompt, task=task)
+            verif = VerifierRegistry.verify_task(task, resp)
+            fv_matrix.record_observation(
+                model_id=profile.id,
+                demand=task.demand,
+                passed=verif.passed,
+                score=verif.score,
+            )
+
+    # Define all baseline and routing configurations including the Factorial Matrix & FV-BWR
     experiments = [
         ("exp01_strongest_only", "M5 Only (Baseline)", StrongestOnlyRouter(profiles)),
         ("exp02_fixed_full", "Policy A: Fixed Cascade (Full Context)", VerifiedFullTaskRouter(profiles)),
         ("exp05_fixed_residual", "Policy B: VRR (Fixed + Residual)", VerifiedResidualRouter(profiles)),
-        ("exp06a_bwr_full", "Policy C: BWR (Full Context)", BalancedWeightRouter(profiles, capability_matrix=matrix, allow_skipping=True, use_residual=False)),
-        ("exp06b_bwr_residual", "Policy D: BWR + VRR (Balanced + Residual)", BalancedWeightRouter(profiles, capability_matrix=matrix, allow_skipping=True, use_residual=True)),
+        ("exp06a_bwr_full", "Policy C: Coarse BWR (Domain-level)", BalancedWeightRouter(profiles, capability_matrix=matrix, allow_skipping=True, use_residual=False)),
+        ("exp06b_bwr_residual", "Policy D: Coarse BWR + VRR", BalancedWeightRouter(profiles, capability_matrix=matrix, allow_skipping=True, use_residual=True)),
+        ("exp07a_fv_bwr_full", "Policy E: Feature-Vector BWR (Full)", FeatureVectorBWRRouter(profiles, feature_matrix=fv_matrix, use_residual=False)),
+        ("exp07b_fv_bwr_vrr", "Policy F: Feature-Vector BWR + VRR", FeatureVectorBWRRouter(profiles, feature_matrix=fv_matrix, use_residual=True)),
         ("exp03_confidence_control", "Confidence Router (Ablation Control)", ConfidenceRouter(profiles, confidence_threshold=0.85)),
     ]
 

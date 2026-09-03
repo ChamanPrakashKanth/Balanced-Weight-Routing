@@ -1,0 +1,278 @@
+{
+  "model_ids": [
+    "model_1",
+    "model_2",
+    "model_3",
+    "model_4",
+    "model_5"
+  ],
+  "capabilities": {
+    "model_1": [
+      0.50167819096524,
+      0.4895811204129482,
+      0.6471698113207548,
+      0.44185445207120244,
+      0.4696398912095669,
+      0.5642437550529908,
+      0.13333333333333333
+    ],
+    "model_2": [
+      0.6809523809523812,
+      0.6000000000000002,
+      0.6471698113207548,
+      0.5153846153846153,
+      0.6035714285714285,
+      0.6196078431372549,
+      0.13333333333333333
+    ],
+    "model_3": [
+      0.7080273973144464,
+      0.6627654779548476,
+      0.6471698113207548,
+      0.6149313751481255,
+      0.6660684626381383,
+      0.6622829707392653,
+      0.3733333333333333
+    ],
+    "model_4": [
+      0.7793650793650795,
+      0.8022346368715085,
+      0.820754716981132,
+      0.7538461538461537,
+      0.7107142857142857,
+      0.7843137254901962,
+      0.6266666666666667
+    ],
+    "model_5": [
+      0.7793650793650795,
+      0.8022346368715085,
+      0.820754716981132,
+      0.7538461538461537,
+      0.7107142857142857,
+      0.7843137254901962,
+      0.6266666666666667
+    ]
+  },
+  "dim_stats": {
+    "model_1": {
+      "math": {
+        "weight_sum": 5.299999999999999,
+        "success_sum": 0.0,
+        "score_sum": 2.6605726030810115,
+        "count": 12.0
+      },
+      "reasoning": {
+        "weight_sum": 7.95,
+        "success_sum": 0.0,
+        "score_sum": 3.881751027695886,
+        "count": 14.0
+      },
+      "code": {
+        "weight_sum": 4.3,
+        "success_sum": 0.0,
+        "score_sum": 2.93,
+        "count": 6.0
+      },
+      "language": {
+        "weight_sum": 4.200000000000001,
+        "success_sum": 0.0,
+        "score_sum": 1.797643150770253,
+        "count": 14.0
+      },
+      "mechanics": {
+        "weight_sum": 4.6,
+        "success_sum": 0.0,
+        "score_sum": 2.1299833907735746,
+        "count": 7.0
+      },
+      "planning": {
+        "weight_sum": 4.1,
+        "success_sum": 0.0,
+        "score_sum": 2.377643150770253,
+        "count": 14.0
+      },
+      "trap": {
+        "weight_sum": 2.75,
+        "success_sum": 0.0,
+        "score_sum": 0.0,
+        "count": 3.0
+      }
+    },
+    "model_2": {
+      "math": {
+        "weight_sum": 5.299999999999999,
+        "success_sum": 0.0,
+        "score_sum": 3.7900000000000005,
+        "count": 12.0
+      },
+      "reasoning": {
+        "weight_sum": 7.95,
+        "success_sum": 0.0,
+        "score_sum": 4.870000000000001,
+        "count": 14.0
+      },
+      "code": {
+        "weight_sum": 4.3,
+        "success_sum": 0.0,
+        "score_sum": 2.93,
+        "count": 6.0
+      },
+      "language": {
+        "weight_sum": 4.200000000000001,
+        "success_sum": 0.0,
+        "score_sum": 2.18,
+        "count": 14.0
+      },
+      "mechanics": {
+        "weight_sum": 4.6,
+        "success_sum": 0.0,
+        "score_sum": 2.88,
+        "count": 7.0
+      },
+      "planning": {
+        "weight_sum": 4.1,
+        "success_sum": 0.0,
+        "score_sum": 2.66,
+        "count": 14.0
+      },
+      "trap": {
+        "weight_sum": 2.75,
+        "success_sum": 0.0,
+        "score_sum": 0.0,
+        "count": 3.0
+      }
+    },
+    "model_3": {
+      "math": {
+        "weight_sum": 5.299999999999999,
+        "success_sum": 0.0,
+        "score_sum": 3.9605726030810118,
+        "count": 12.0
+      },
+      "reasoning": {
+        "weight_sum": 7.95,
+        "success_sum": 0.0,
+        "score_sum": 5.431751027695886,
+        "count": 14.0
+      },
+      "code": {
+        "weight_sum": 4.3,
+        "success_sum": 0.0,
+        "score_sum": 2.93,
+        "count": 6.0
+      },
+      "language": {
+        "weight_sum": 4.200000000000001,
+        "success_sum": 0.0,
+        "score_sum": 2.697643150770253,
+        "count": 14.0
+      },
+      "mechanics": {
+        "weight_sum": 4.6,
+        "success_sum": 0.0,
+        "score_sum": 3.2299833907735747,
+        "count": 7.0
+      },
+      "planning": {
+        "weight_sum": 4.1,
+        "success_sum": 0.0,
+        "score_sum": 2.877643150770253,
+        "count": 14.0
+      },
+      "trap": {
+        "weight_sum": 2.75,
+        "success_sum": 0.0,
+        "score_sum": 0.9,
+        "count": 3.0
+      }
+    },
+    "model_4": {
+      "math": {
+        "weight_sum": 5.299999999999999,
+        "success_sum": 0.0,
+        "score_sum": 4.41,
+        "count": 12.0
+      },
+      "reasoning": {
+        "weight_sum": 7.95,
+        "success_sum": 0.0,
+        "score_sum": 6.680000000000001,
+        "count": 14.0
+      },
+      "code": {
+        "weight_sum": 4.3,
+        "success_sum": 0.0,
+        "score_sum": 3.85,
+        "count": 6.0
+      },
+      "language": {
+        "weight_sum": 4.200000000000001,
+        "success_sum": 0.0,
+        "score_sum": 3.4200000000000004,
+        "count": 14.0
+      },
+      "mechanics": {
+        "weight_sum": 4.6,
+        "success_sum": 0.0,
+        "score_sum": 3.48,
+        "count": 7.0
+      },
+      "planning": {
+        "weight_sum": 4.1,
+        "success_sum": 0.0,
+        "score_sum": 3.5000000000000004,
+        "count": 14.0
+      },
+      "trap": {
+        "weight_sum": 2.75,
+        "success_sum": 0.0,
+        "score_sum": 1.85,
+        "count": 3.0
+      }
+    },
+    "model_5": {
+      "math": {
+        "weight_sum": 5.299999999999999,
+        "success_sum": 0.0,
+        "score_sum": 4.41,
+        "count": 12.0
+      },
+      "reasoning": {
+        "weight_sum": 7.95,
+        "success_sum": 0.0,
+        "score_sum": 6.680000000000001,
+        "count": 14.0
+      },
+      "code": {
+        "weight_sum": 4.3,
+        "success_sum": 0.0,
+        "score_sum": 3.85,
+        "count": 6.0
+      },
+      "language": {
+        "weight_sum": 4.200000000000001,
+        "success_sum": 0.0,
+        "score_sum": 3.4200000000000004,
+        "count": 14.0
+      },
+      "mechanics": {
+        "weight_sum": 4.6,
+        "success_sum": 0.0,
+        "score_sum": 3.48,
+        "count": 7.0
+      },
+      "planning": {
+        "weight_sum": 4.1,
+        "success_sum": 0.0,
+        "score_sum": 3.5000000000000004,
+        "count": 14.0
+      },
+      "trap": {
+        "weight_sum": 2.75,
+        "success_sum": 0.0,
+        "score_sum": 1.85,
+        "count": 3.0
+      }
+    }
+  }
+}

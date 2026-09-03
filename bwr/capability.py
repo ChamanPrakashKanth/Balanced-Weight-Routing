@@ -6,7 +6,14 @@ from __future__ import annotations
 from typing import Dict, Any, List, Optional
 import json
 from pathlib import Path
-from bwr.models import TaskDomain, ModelProfile
+import numpy as np
+from bwr.models import (
+    TaskDomain,
+    ModelProfile,
+    CapabilityVector,
+    DemandVector,
+    FEATURE_DIMENSIONS,
+)
 
 
 class EmpiricalCapabilityMatrix:
@@ -139,4 +146,109 @@ class EmpiricalCapabilityMatrix:
             prior_beta=float(data.get("prior_beta", 2.0)),
         )
         matrix.stats = data.get("stats", {})
+        return matrix
+
+
+class FeatureVectorCapabilityMatrix:
+    """
+    Multidimensional empirical capability store C_i in [0, 1]^7 for all models.
+    Supports closed-loop vector imbalance estimation R_i = || W (D - C_i)_+ ||_2.
+    """
+
+    def __init__(
+        self,
+        model_ids: List[str],
+        initial_capabilities: Optional[Dict[str, CapabilityVector]] = None,
+    ):
+        self.model_ids = list(model_ids)
+        self.capabilities: Dict[str, CapabilityVector] = {}
+        self.dim_stats: Dict[str, Dict[str, Dict[str, float]]] = {}
+
+        for mid in self.model_ids:
+            self.capabilities[mid] = CapabilityVector(model_id=mid)
+            self.dim_stats[mid] = {
+                dim: {"weight_sum": 0.0, "success_sum": 0.0, "score_sum": 0.0, "count": 0.0}
+                for dim in FEATURE_DIMENSIONS
+            }
+
+        if initial_capabilities:
+            for mid, c_vec in initial_capabilities.items():
+                self.capabilities[mid] = c_vec
+
+    def get_capability(self, model_id: str) -> CapabilityVector:
+        if model_id not in self.capabilities:
+            self.capabilities[model_id] = CapabilityVector(model_id=model_id)
+        return self.capabilities[model_id]
+
+    def record_observation(
+        self,
+        model_id: str,
+        demand: DemandVector,
+        passed: bool,
+        score: float = 1.0,
+    ) -> None:
+        """
+        Updates empirical capability vector using Bayesian gradient / exponential moving average
+        weighted by task dimension load d_k.
+        """
+        if model_id not in self.dim_stats:
+            self.dim_stats[model_id] = {
+                dim: {"weight_sum": 0.0, "success_sum": 0.0, "score_sum": 0.0, "count": 0.0}
+                for dim in FEATURE_DIMENSIONS
+            }
+        d_arr = demand.to_array()
+        c_curr = self.get_capability(model_id)
+        c_arr = c_curr.to_array().copy()
+
+        for idx, dim in enumerate(FEATURE_DIMENSIONS):
+            load = d_arr[idx]
+            if load > 0.05:
+                stat = self.dim_stats[model_id][dim]
+                stat["weight_sum"] += load
+                stat["count"] += 1.0
+                stat["score_sum"] += (1.0 if passed else score) * load
+                
+                # Empirical capability is load-weighted verified score with prior smoothing
+                empirical = (stat["score_sum"] + 0.5) / (stat["weight_sum"] + 1.0)
+                c_arr[idx] = float(np.clip(empirical, 0.05, 0.98))
+
+        self.capabilities[model_id] = CapabilityVector.from_array(model_id, c_arr)
+
+    def calculate_imbalance(
+        self,
+        model_id: str,
+        demand: DemandVector,
+        dimension_weights: Optional[np.ndarray] = None,
+    ) -> float:
+        """
+        Calculates R_i = || W (D - C_i)_+ ||_2
+        """
+        c_vec = self.get_capability(model_id)
+        return demand.weighted_imbalance_norm(c_vec, weights=dimension_weights)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "model_ids": self.model_ids,
+            "capabilities": {mid: c.to_array().tolist() for mid, c in self.capabilities.items()},
+            "dim_stats": self.dim_stats,
+        }
+
+    def save_json(self, file_path: str | Path) -> None:
+        p = Path(file_path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(self.to_dict(), f, indent=2)
+
+    @classmethod
+    def load_json(cls, file_path: str | Path) -> FeatureVectorCapabilityMatrix:
+        p = Path(file_path)
+        if not p.exists():
+            return cls(model_ids=[])
+        with open(p, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        matrix = cls(model_ids=data.get("model_ids", []))
+        caps = data.get("capabilities", {})
+        for mid, arr in caps.items():
+            matrix.capabilities[mid] = CapabilityVector.from_array(mid, np.array(arr, dtype=float))
+        matrix.dim_stats = data.get("dim_stats", {})
         return matrix

@@ -4,6 +4,15 @@
     "title": "Damped Vibration Logarithmic Decrement Solver",
     "domain": "code",
     "difficulty": 0.65,
+    "demand": {
+      "math": 0.65,
+      "reasoning": 0.70,
+      "code": 0.75,
+      "language": 0.30,
+      "mechanics": 0.70,
+      "planning": 0.50,
+      "trap": 0.00
+    },
     "prompt": "Implement a Python function `log_decrement_damping_ratio(x1: float, xn: float, n: float) -> float` that computes the damping ratio zeta from the logarithmic decrement delta = (1/n) * ln(x1 / xn), where zeta = delta / sqrt(4 * pi^2 + delta^2). Round result to 5 decimal places.",
     "reference_solution": "import math\n\ndef log_decrement_damping_ratio(x1: float, xn: float, n: float) -> float:\n    delta = (1.0 / n) * math.log(x1 / xn)\n    zeta = delta / math.sqrt(4 * math.pi**2 + delta**2)\n    return round(zeta, 5)",
     "test_cases": [
@@ -29,6 +38,15 @@
     "title": "Principal Moments of Inertia Eigenvalue Solver",
     "domain": "code",
     "difficulty": 0.75,
+    "demand": {
+      "math": 0.75,
+      "reasoning": 0.75,
+      "code": 0.80,
+      "language": 0.30,
+      "mechanics": 0.80,
+      "planning": 0.50,
+      "trap": 0.00
+    },
     "prompt": "Write a Python function `principal_inertia(Ixx: float, Iyy: float, Ixy: float) -> tuple[float, float]` that calculates the principal moments of inertia (I_max, I_min) using Mohr's circle / eigenvalue formula: (Ixx + Iyy)/2 +/- sqrt(((Ixx - Iyy)/2)^2 + Ixy^2). Return tuple (round(I_max, 4), round(I_min, 4)).",
     "reference_solution": "import math\n\ndef principal_inertia(Ixx: float, Iyy: float, Ixy: float) -> tuple[float, float]:\n    avg = (Ixx + Iyy) / 2.0\n    diff = (Ixx - Iyy) / 2.0\n    R = math.sqrt(diff**2 + Ixy**2)\n    return (round(avg + R, 4), round(avg - R, 4))",
     "test_cases": [
@@ -48,6 +66,15 @@
     "title": "Compound Gear Train Output Speed",
     "domain": "mechanics",
     "difficulty": 0.40,
+    "demand": {
+      "math": 0.40,
+      "reasoning": 0.45,
+      "code": 0.00,
+      "language": 0.30,
+      "mechanics": 0.60,
+      "planning": 0.20,
+      "trap": 0.00
+    },
     "prompt": "A compound gear train consists of driver gear 1 (N1 = 20 teeth, input speed omega1 = 1800 rpm) meshing with gear 2 (N2 = 60 teeth). Gear 3 (N3 = 25 teeth) is mounted on the same shaft as gear 2 and meshes with gear 4 (N4 = 100 teeth). Calculate the output rotational speed omega4 of gear 4 in rpm. State your final answer clearly as 'Answer: <number>'.",
     "reference_solution": "Train ratio = (N1 / N2) * (N3 / N4) = (20 / 60) * (25 / 100) = (1/3) * (1/4) = 1/12.\nOutput speed omega4 = omega1 * (1/12) = 1800 / 12 = 150.0 rpm.\nAnswer: 150.0",
     "expected_output": 150.0,

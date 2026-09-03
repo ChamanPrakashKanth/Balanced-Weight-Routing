@@ -18,32 +18,109 @@ class TaskDomain(str, Enum):
     TRAP = "trap"
 
 
+FEATURE_DIMENSIONS = ["math", "reasoning", "code", "language", "mechanics", "planning", "trap"]
+
+
+@dataclass
+class CapabilityVector:
+    """
+    Empirical capability vector C_i = [c_math, c_reasoning, c_code, c_language, c_mechanics, c_planning, c_trap].
+    """
+    model_id: str
+    math: float = 0.5
+    reasoning: float = 0.5
+    code: float = 0.5
+    language: float = 0.5
+    mechanics: float = 0.5
+    planning: float = 0.5
+    trap: float = 0.5
+
+    def to_array(self) -> np.ndarray:
+        return np.array([
+            self.math,
+            self.reasoning,
+            self.code,
+            self.language,
+            self.mechanics,
+            self.planning,
+            self.trap,
+        ], dtype=float)
+
+    @classmethod
+    def from_array(cls, model_id: str, arr: np.ndarray) -> CapabilityVector:
+        return cls(
+            model_id=model_id,
+            math=float(arr[0]),
+            reasoning=float(arr[1]),
+            code=float(arr[2]),
+            language=float(arr[3]),
+            mechanics=float(arr[4]),
+            planning=float(arr[5]),
+            trap=float(arr[6]) if len(arr) > 6 else 0.5,
+        )
+
+
 @dataclass
 class DemandVector:
     """
-    Multidimensional task load representation D = [d_code, d_math, d_mech, d_struct, d_trap].
+    Multidimensional task load representation D = [d_math, d_reasoning, d_code, d_language, d_mechanics, d_planning, d_trap].
     """
-    code: float = 0.0
     math: float = 0.0
+    reasoning: float = 0.0
+    code: float = 0.0
+    language: float = 0.0
     mechanics: float = 0.0
-    structured: float = 0.0
+    planning: float = 0.0
     trap: float = 0.0
 
     def to_array(self) -> np.ndarray:
-        return np.array([self.code, self.math, self.mechanics, self.structured, self.trap], dtype=float)
+        return np.array([
+            self.math,
+            self.reasoning,
+            self.code,
+            self.language,
+            self.mechanics,
+            self.planning,
+            self.trap,
+        ], dtype=float)
 
     @classmethod
     def from_array(cls, arr: np.ndarray) -> DemandVector:
+        if len(arr) < 7:
+            padded = np.zeros(7, dtype=float)
+            padded[:len(arr)] = arr
+            arr = padded
         return cls(
-            code=float(arr[0]),
-            math=float(arr[1]),
-            mechanics=float(arr[2]),
-            structured=float(arr[3]),
-            trap=float(arr[4]) if len(arr) > 4 else 0.0,
+            math=float(arr[0]),
+            reasoning=float(arr[1]),
+            code=float(arr[2]),
+            language=float(arr[3]),
+            mechanics=float(arr[4]),
+            planning=float(arr[5]),
+            trap=float(arr[6]),
         )
 
     def norm(self) -> float:
         return float(np.linalg.norm(self.to_array()))
+
+    def deficit(self, capability: CapabilityVector | np.ndarray) -> np.ndarray:
+        """
+        Calculates component-wise remaining imbalance: R_i = max(0, D - C_i).
+        """
+        c_arr = capability.to_array() if isinstance(capability, CapabilityVector) else np.asarray(capability)
+        return np.maximum(0.0, self.to_array() - c_arr)
+
+    def weighted_imbalance_norm(
+        self,
+        capability: CapabilityVector | np.ndarray,
+        weights: Optional[np.ndarray] = None,
+    ) -> float:
+        """
+        Calculates weighted imbalance norm: R_i = || W (D - C_i)_+ ||_2.
+        """
+        r = self.deficit(capability)
+        w = weights if weights is not None else np.ones_like(r)
+        return float(np.sqrt(np.sum(w * (r ** 2))))
 
 
 @dataclass
@@ -67,15 +144,17 @@ class Task:
         # If demand is empty, initialize based on primary domain and difficulty
         if np.all(self.demand.to_array() == 0.0):
             if self.domain == TaskDomain.CODE:
-                self.demand.code = self.difficulty
+                self.demand = DemandVector(code=self.difficulty, reasoning=max(0.3, self.difficulty * 0.8), language=0.2)
             elif self.domain == TaskDomain.MATH:
-                self.demand.math = self.difficulty
+                self.demand = DemandVector(math=self.difficulty, reasoning=max(0.4, self.difficulty * 0.9), language=0.2)
             elif self.domain == TaskDomain.MECHANICS:
-                self.demand.mechanics = self.difficulty
+                self.demand = DemandVector(mechanics=self.difficulty, math=self.difficulty * 0.7, reasoning=self.difficulty * 0.7, language=0.2)
             elif self.domain == TaskDomain.STRUCTURED:
-                self.demand.structured = self.difficulty
+                self.demand = DemandVector(language=self.difficulty, reasoning=self.difficulty * 0.5, code=0.2)
             elif self.domain == TaskDomain.TRAP:
-                self.demand.trap = self.difficulty
+                self.demand = DemandVector(trap=self.difficulty, reasoning=0.9, language=0.7)
+            elif self.domain == TaskDomain.MIXED:
+                self.demand = DemandVector(math=0.5, code=0.6, reasoning=0.7, mechanics=0.5, language=0.4)
 
 
 @dataclass
@@ -205,7 +284,13 @@ class RoutingState:
     accumulated_latency: float = 0.0
     history: List[RoutingHistoryItem] = field(default_factory=list)
     current_residual: float = 1.0
+    current_demand: DemandVector = field(default_factory=DemandVector)
+    observed_residual_vector: Optional[DemandVector] = None
     success: bool = False
     final_response: Optional[ModelResponse] = None
     final_verification: Optional[VerificationResult] = None
     termination_reason: str = "in_progress"
+
+    def __post_init__(self):
+        if np.all(self.current_demand.to_array() == 0.0):
+            self.current_demand = DemandVector.from_array(self.task.demand.to_array().copy())

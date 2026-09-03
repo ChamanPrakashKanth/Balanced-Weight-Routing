@@ -23,13 +23,18 @@ class TaskLoader:
             domain = TaskDomain.CODE
 
         demand_dict = data.get("demand", {})
-        demand = DemandVector(
-            code=float(demand_dict.get("code", 0.0)),
-            math=float(demand_dict.get("math", 0.0)),
-            mechanics=float(demand_dict.get("mechanics", 0.0)),
-            structured=float(demand_dict.get("structured", 0.0)),
-            trap=float(demand_dict.get("trap", 0.0)),
-        )
+        if demand_dict:
+            demand = DemandVector(
+                math=float(demand_dict.get("math", 0.0)),
+                reasoning=float(demand_dict.get("reasoning", 0.0)),
+                code=float(demand_dict.get("code", 0.0)),
+                language=float(demand_dict.get("language", 0.0)),
+                mechanics=float(demand_dict.get("mechanics", 0.0)),
+                planning=float(demand_dict.get("planning", 0.0)),
+                trap=float(demand_dict.get("trap", 0.0)),
+            )
+        else:
+            demand = DemandVector()  # Task.__post_init__ will infer defaults if empty
 
         return Task(
             id=str(data.get("id", "task_unknown")),
@@ -66,9 +71,12 @@ def calculate_residual_demand(
     allocated_capabilities: List[DemandVector]
 ) -> DemandVector:
     """
-    R = D - sum(a_i * C_i)
+    R = D - sum(C_i)
     """
     d_arr = demand.to_array()
-    c_arr = sum((c.to_array() for c in allocated_capabilities), start=np.zeros(5))
+    if not allocated_capabilities:
+        return DemandVector.from_array(d_arr)
+    import numpy as np
+    c_arr = sum((c.to_array() for c in allocated_capabilities), start=np.zeros(7))
     r_arr = np.maximum(0.0, d_arr - c_arr)
     return DemandVector.from_array(r_arr)

@@ -99,5 +99,30 @@ def test_bwr_router_with_matrix(sample_profiles, sample_task):
     router = BalancedWeightRouter(sample_profiles, capability_matrix=matrix, allow_skipping=True)
     state = RoutingState(task=sample_task)
 
-    dec0 = router.route_step(state)
-    assert dec0.selected_model_id in [p.id for p in sample_profiles]
+    dec = router.route_step(state)
+    assert dec.selected_model_id in ["model_1", "model_4"]
+
+
+def test_feature_vector_bwr_router(sample_profiles):
+    from bwr.capability import FeatureVectorCapabilityMatrix
+    from bwr.models import CapabilityVector, DemandVector
+    from bwr.router import FeatureVectorBWRRouter
+
+    fv_matrix = FeatureVectorCapabilityMatrix(model_ids=[p.id for p in sample_profiles])
+    # Set M1 weak at math but M4 strong at math
+    fv_matrix.capabilities["model_1"] = CapabilityVector(model_id="model_1", math=0.2, code=0.8)
+    fv_matrix.capabilities["model_4"] = CapabilityVector(model_id="model_4", math=0.9, code=0.8)
+
+    # Math heavy task should route towards M4 over M1 despite M1 being cheaper
+    math_task = Task(
+        id="math_heavy",
+        title="Heavy Math",
+        prompt="Solve integral",
+        domain=TaskDomain.MATH,
+        demand=DemandVector(math=0.9, reasoning=0.8),
+    )
+    router = FeatureVectorBWRRouter(sample_profiles, feature_matrix=fv_matrix, lambda_r=10.0, lambda_k=1.0)
+    state = RoutingState(task=math_task)
+
+    dec = router.route_step(state)
+    assert dec.selected_model_id in ["model_4", "model_5"]

@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Tuple, Optional
 import yaml
 from pathlib import Path
+import numpy as np
 
 from bwr.models import (
     Task,
@@ -17,7 +18,7 @@ from bwr.models import (
     VerificationResult,
     ModelResponse,
 )
-from bwr.capability import EmpiricalCapabilityMatrix
+from bwr.capability import EmpiricalCapabilityMatrix, FeatureVectorCapabilityMatrix
 from bwr.residual import ResidualExtractor
 from bwr.cost import CostTracker
 
@@ -362,10 +363,91 @@ class BalancedWeightRouter(BaseRouter):
         return best_candidate.id, best_jump
 
 
+class FeatureVectorBWRRouter(BaseRouter):
+    """
+    Feature-Vector Balanced Weight Router (FV-BWR):
+    Selects models by minimizing the joint residual imbalance and execution compute:
+        J_i = lambda_R * || W (D_t - C_i)_+ ||_2^2 + lambda_K * K_i
+    where D_t is the dynamic task demand vector, updated after verifier feedback.
+    """
+
+    def __init__(
+        self,
+        profiles: List[ModelProfile],
+        feature_matrix: Optional[FeatureVectorCapabilityMatrix] = None,
+        lambda_r: float = 1.0,
+        lambda_k: float = 20.0,
+        dimension_weights: Optional[np.ndarray] = None,
+        use_residual: bool = True,
+    ):
+        super().__init__(profiles)
+        self.feature_matrix = feature_matrix or FeatureVectorCapabilityMatrix(
+            model_ids=[p.id for p in self.profiles]
+        )
+        self.lambda_r = lambda_r
+        self.lambda_k = lambda_k
+        self.dimension_weights = dimension_weights if dimension_weights is not None else np.ones(7, dtype=float)
+        self.use_residual = use_residual
+
+    def route_step(
+        self,
+        state: RoutingState,
+        last_response: Optional[ModelResponse] = None,
+        last_verification: Optional[VerificationResult] = None,
+    ) -> RoutingDecision:
+        # Use dynamic demand vector from state (D_0 or D_{t+1} = R_obs)
+        demand = state.current_demand
+        attempted_model_ids = {h.model_id for h in state.history}
+
+        # Evaluate objective J_i for all candidate models
+        candidates_scores = []
+        for p in self.profiles:
+            # Imbalance norm R_i = || W (D - C_i)_+ ||_2
+            r_norm = self.feature_matrix.calculate_imbalance(
+                p.id,
+                demand,
+                dimension_weights=self.dimension_weights,
+            )
+            # Cost proxy: parameter-scaled proxy per 1k tokens
+            cost_factor = p.mock_profile.get("token_cost_multiplier", p.cost_tier * 0.2)
+            k_proxy = float(cost_factor * 0.02)
+
+            # J_i = lambda_r * R_i^2 + lambda_k * K_i
+            j_score = float(self.lambda_r * (r_norm ** 2) + self.lambda_k * k_proxy)
+
+            # Penalty if model was already attempted and failed this task without resolving
+            if p.id in attempted_model_ids:
+                j_score += 10.0
+
+            candidates_scores.append((j_score, r_norm, k_proxy, p))
+
+        # Sort by minimum balancing objective J_i
+        candidates_scores.sort(key=lambda x: x[0])
+        best_j, best_r, best_k, best_profile = candidates_scores[0]
+
+        # If all unattempted models have high imbalance, pick the strongest available
+        if best_profile.id in attempted_model_ids and len(attempted_model_ids) < len(self.profiles):
+            unattempted = [cs for cs in candidates_scores if cs[3].id not in attempted_model_ids]
+            if unattempted:
+                best_j, best_r, best_k, best_profile = unattempted[0]
+
+        is_res = self.use_residual if state.current_step > 0 else False
+        expected_coverage = max(0.0, 1.0 - best_r)
+
+        return RoutingDecision(
+            selected_model_id=best_profile.id,
+            reason=f"fv_bwr_imbalance_{best_r:.2f}_cost_{best_k:.3f}_J_{best_j:.3f}",
+            is_residual=is_res,
+            expected_efficiency=expected_coverage / max(1e-6, best_k),
+            estimated_capability=expected_coverage,
+        )
+
+
 def create_router(
     router_name: str,
     profiles: List[ModelProfile],
     capability_matrix: Optional[EmpiricalCapabilityMatrix] = None,
+    feature_matrix: Optional[FeatureVectorCapabilityMatrix] = None,
     routing_config_path: Optional[str | Path] = None,
 ) -> BaseRouter:
     r_name = router_name.lower().replace("-", "_")
@@ -384,5 +466,7 @@ def create_router(
         return VerifiedResidualRouter(profiles)
     elif r_name in ("bwr", "balanced_weight", "balanced_weight_router", "exp06"):
         return BalancedWeightRouter(profiles, capability_matrix=capability_matrix)
+    elif r_name in ("fv_bwr", "feature_vector_bwr", "vector_bwr", "exp07"):
+        return FeatureVectorBWRRouter(profiles, feature_matrix=feature_matrix)
     else:
         raise ValueError(f"Unknown router name: {router_name}")

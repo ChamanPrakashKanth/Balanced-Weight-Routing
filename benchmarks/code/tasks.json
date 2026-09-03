@@ -4,6 +4,15 @@
     "title": "Run-Length Encoding String Compressor",
     "domain": "code",
     "difficulty": 0.25,
+    "demand": {
+      "math": 0.00,
+      "reasoning": 0.30,
+      "code": 0.50,
+      "language": 0.20,
+      "mechanics": 0.00,
+      "planning": 0.20,
+      "trap": 0.00
+    },
     "prompt": "Write a Python function `rle_encode(text: str) -> str` that performs run-length encoding. For example, 'AAABBC' -> '3A2B1C'. If input is empty string, return empty string.",
     "reference_solution": "def rle_encode(text: str) -> str:\n    if not text:\n        return ''\n    result = []\n    count = 1\n    for i in range(1, len(text)):\n        if text[i] == text[i-1]:\n            count += 1\n        else:\n            result.append(f'{count}{text[i-1]}')\n            count = 1\n    result.append(f'{count}{text[-1]}')\n    return ''.join(result)",
     "test_cases": [
@@ -41,6 +50,15 @@
     "title": "Repair Binary Search Bug",
     "domain": "code",
     "difficulty": 0.45,
+    "demand": {
+      "math": 0.10,
+      "reasoning": 0.60,
+      "code": 0.65,
+      "language": 0.20,
+      "mechanics": 0.00,
+      "planning": 0.40,
+      "trap": 0.00
+    },
     "prompt": "The following binary search function has an integer overflow / boundary bug with duplicates or off-by-one. Implement `binary_search(arr: list[int], target: int) -> int` returning the lowest index of target, or -1 if not found.",
     "reference_solution": "def binary_search(arr: list[int], target: int) -> int:\n    low, high = 0, len(arr) - 1\n    res = -1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            res = mid\n            high = mid - 1\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return res",
     "test_cases": [
@@ -78,6 +96,15 @@
     "title": "Topological Sort Dependency Resolver",
     "domain": "code",
     "difficulty": 0.70,
+    "demand": {
+      "math": 0.10,
+      "reasoning": 0.80,
+      "code": 0.85,
+      "language": 0.20,
+      "mechanics": 0.00,
+      "planning": 0.70,
+      "trap": 0.00
+    },
     "prompt": "Implement `topological_sort(num_nodes: int, edges: list[tuple[int, int]]) -> list[int]` where an edge (u, v) means node u must come before node v. If a cycle is detected, return an empty list []. Tie-break using smallest node index first.",
     "reference_solution": "import heapq\nfrom collections import defaultdict\n\ndef topological_sort(num_nodes: int, edges: list[tuple[int, int]]) -> list[int]:\n    in_degree = [0] * num_nodes\n    adj = defaultdict(list)\n    for u, v in edges:\n        adj[u].append(v)\n        in_degree[v] += 1\n    heap = [i for i in range(num_nodes) if in_degree[i] == 0]\n    heapq.heapify(heap)\n    result = []\n    while heap:\n        curr = heapq.heappop(heap)\n        result.append(curr)\n        for neighbor in adj[curr]:\n            in_degree[neighbor] -= 1\n            if in_degree[neighbor] == 0:\n                heapq.heappush(heap, neighbor)\n    return result if len(result) == num_nodes else []",
     "test_cases": [
@@ -109,6 +136,15 @@
     "title": "Nested Dictionary Flattener",
     "domain": "code",
     "difficulty": 0.40,
+    "demand": {
+      "math": 0.00,
+      "reasoning": 0.40,
+      "code": 0.60,
+      "language": 0.30,
+      "mechanics": 0.00,
+      "planning": 0.30,
+      "trap": 0.00
+    },
     "prompt": "Implement `flatten_dict(d: dict, parent_key: str = '', sep: str = '.') -> dict` that flattens nested dictionaries into dot-separated paths.",
     "reference_solution": "def flatten_dict(d: dict, parent_key: str = '', sep: str = '.') -> dict:\n    items = []\n    for k, v in d.items():\n        new_key = f'{parent_key}{sep}{k}' if parent_key else str(k)\n        if isinstance(v, dict):\n            items.extend(flatten_dict(v, new_key, sep=sep).items())\n        else:\n            items.append((new_key, v))\n    return dict(items)",
     "test_cases": [
@@ -134,6 +170,15 @@
     "title": "LRU Cache Data Structure",
     "domain": "code",
     "difficulty": 0.80,
+    "demand": {
+      "math": 0.00,
+      "reasoning": 0.80,
+      "code": 0.90,
+      "language": 0.20,
+      "mechanics": 0.00,
+      "planning": 0.80,
+      "trap": 0.00
+    },
     "prompt": "Implement an LRU Cache class `LRUCache(capacity: int)` with methods `get(key: int) -> int` (returns -1 if not found) and `put(key: int, value: int) -> None` running in O(1) time.",
     "reference_solution": "from collections import OrderedDict\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.capacity = capacity\n        self.cache = OrderedDict()\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self.cache.move_to_end(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "test_cases": [
