@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use Balanced Weight Routing in research, please cite this repository."
+title: "Balanced Weight Routing: Verified Residual Routing for Efficient Local LLM Inference"
+type: software
+authors:
+  - family-names: "Kanth"
+    given-names: "Chaman Prakash"
+repository-code: "https://github.com/ChamanPrakashKanth/Balanced-Weight-Routing"
+url: "https://github.com/ChamanPrakashKanth/Balanced-Weight-Routing"
+abstract: >-
+  An experimental framework for routing tasks across heterogeneous local language
+  models using external verification and residual task difficulty, with the goal
+  of reducing inference cost while preserving verified task success.
+keywords:
+  - "LLM routing"
+  - "model cascade"
+  - "verified inference"
+  - "local LLM"
+  - "adaptive routing"
+  - "inference efficiency"
+  - "small language models"
